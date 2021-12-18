@@ -2,7 +2,27 @@
 
 Private Ethereum Testnet with Blockscout explorer
 
-## Running locally
+## Running locally (with a blockscout build made by Demos Labs)
+
+Clone the repository with the submodules:
+
+```sh
+git clone git@github.com:DemosLabs/IcingOnTheCake.git
+```
+
+Pull the docker-compose containers
+
+```sh
+docker-compose pull
+```
+
+Run the docker-compose project
+
+```sh
+docker-compose up
+```
+
+## Running locally (with a local blockscout build)
 
 Clone the repository with the submodules:
 
@@ -10,7 +30,13 @@ Clone the repository with the submodules:
 git clone git@github.com:DemosLabs/IcingOnTheCake.git --recursive
 ```
 
-Start the docker-compose project (the first run might take some time since it will build blockscout)
+Build the docker-compose project
+
+```sh
+docker-compose build
+```
+
+Run the docker-compose project
 
 ```sh
 docker-compose up
