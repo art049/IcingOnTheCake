@@ -14,6 +14,7 @@ services:
       - DATABASE_URL=ecto://postgres:postgres@postgres/postgres?ssl=false
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
+      - SUBNETWORK=Local
       - NETWORK=Icing
       - CHAIN_ID=1337
       - COIN=ETH
@@ -66,7 +67,7 @@ services:
         --deterministic \
         --db=/ganache_data \
         --mnemonic "test test test test test test test test test test test junk" \
-        --networkId "1337" \
+        --chainId "1337" \
         --hostname "0.0.0.0"
     healthcheck:
       test: ["CMD", "curl", "--request", "POST", "localhost:8545","--header","Content-Type: application/json","--data-raw", '{"jsonrpc":"2.0","method":"net_listening","params":[], "id":67}']
