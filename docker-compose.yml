@@ -1,6 +1,7 @@
 version: "3.6"
 services:
   blockscout:
+    image: ghcr.io/demoslabs/blockscout:latest
     build:
       context: blockscout/
       dockerfile: ./docker/Dockerfile
@@ -61,11 +62,11 @@ services:
       - -c
       - |
         apk add curl;
-        node /app/ganache-core.docker.cli.js
-        --deterministic
-        --db=/ganache_data
-        --mnemonic "test test test test test test test test test test test junk"
-        --networkId "1337"
+        node /app/ganache-core.docker.cli.js \
+        --deterministic \
+        --db=/ganache_data \
+        --mnemonic "test test test test test test test test test test test junk" \
+        --networkId "1337" \
         --hostname "0.0.0.0"
     healthcheck:
       test: ["CMD", "curl", "--request", "POST", "localhost:8545","--header","Content-Type: application/json","--data-raw", '{"jsonrpc":"2.0","method":"net_listening","params":[], "id":67}']
