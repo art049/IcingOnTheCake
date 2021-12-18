@@ -1,0 +1,79 @@
+version: "3.6"
+services:
+  blockscout:
+    build:
+      context: blockscout/
+      dockerfile: ./docker/Dockerfile
+      args:
+        COIN: ETH
+
+    restart: "no"
+    environment:
+      - PORT=4000
+      - DATABASE_URL=ecto://postgres:postgres@postgres/postgres?ssl=false
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - NETWORK=Icing
+      - CHAIN_ID=1337
+      - COIN=ETH
+      - ETHEREUM_JSONRPC_VARIANT=ganache
+      - ETHEREUM_JSONRPC_TRANSPORT=http
+      - ETHEREUM_JSONRPC_HTTP_URL=http://ganache-cli:8545
+      - ETHEREUM_JSONRPC_WS_URL=ws://ganache-cli:8545
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        cd /opt/app/;
+        echo $$MIX_ENV && mix do ecto.create, ecto.migrate; mix phx.server;
+    links:
+      - postgres
+      - ganache-cli
+    ports:
+      - 26000:4000
+
+  postgres:
+    image: postgres:12.5
+    restart: "on-failure"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - blockscoutpostgres:/var/lib/postgresql/data
+    command: postgres -c 'max_connections=2000'
+    ports:
+      - 5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  ganache-cli:
+    image: trufflesuite/ganache-cli:latest
+    restart: "on-failure"
+    ports:
+      - 8545:8545
+    volumes:
+      - ganache_data:/ganache_data
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        apk add curl;
+        node /app/ganache-core.docker.cli.js
+        --deterministic
+        --db=/ganache_data
+        --mnemonic "test test test test test test test test test test test junk"
+        --networkId "1337"
+        --hostname "0.0.0.0"
+    healthcheck:
+      test: ["CMD", "curl", "--request", "POST", "localhost:8545","--header","Content-Type: application/json","--data-raw", '{"jsonrpc":"2.0","method":"net_listening","params":[], "id":67}']
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  blockscoutpostgres: null
+  ganache_data: null
+
