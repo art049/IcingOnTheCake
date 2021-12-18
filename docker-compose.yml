@@ -18,6 +18,7 @@ services:
       - NETWORK=Icing
       - CHAIN_ID=1337
       - COIN=ETH
+      - BLOCKSCOUT_VERSION=IcingOnTheCake
       - ETHEREUM_JSONRPC_VARIANT=ganache
       - ETHEREUM_JSONRPC_TRANSPORT=http
       - ETHEREUM_JSONRPC_HTTP_URL=http://ganache-cli:8545
