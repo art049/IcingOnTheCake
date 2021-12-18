@@ -1,0 +1,28 @@
+version: "3.6"
+services:
+  blockscout:
+    networks:
+      - icing
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.icing-auth.basicauth.users=${BASIC_AUTH_SECRET}"
+      - "traefik.http.routers.icing-explorer.rule=Host(`explorer.${HOST}`)"
+      - "traefik.http.routers.icing-explorer.entrypoints=websecure"
+      - "traefik.http.routers.icing-explorer.tls.certresolver=tlsresolver"
+      - "traefik.http.services.icing-explorer.loadbalancer.server.port=4000"
+      - "traefik.http.routers.icing-explorer.middlewares=icing-auth@docker"
+  postgres:
+    networks:
+      - icing
+  ganache-cli:
+    networks:
+      - icing
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.icing-rpc.rule=Host(`rpc.${HOST}`)"
+      - "traefik.http.routers.icing-rpc.entrypoints=websecure"
+      - "traefik.http.routers.icing-rpc.tls.certresolver=tlsresolver"
+      - "traefik.http.services.icing-rpc.loadbalancer.server.port=8545"
+      - "traefik.http.routers.icing-rpc.middlewares=icing-auth@docker"

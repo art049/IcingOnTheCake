@@ -1,10 +1,15 @@
 # IcingOnTheCake
 
-Private Ethereum Testnet with Blockscout explorer
+A Private Ethereum Testnet with Blockscout explorer easily deployable with docker-compose
+
+## Requirements
+
+- Install [Docker](https://docs.docker.com/get-docker/)
+- Install [docker-compose](https://docs.docker.com/compose/install/)
 
 ## Running locally (with a blockscout build made by Demos Labs)
 
-Clone the repository with the submodules:
+Clone the repository:
 
 ```sh
 git clone git@github.com:DemosLabs/IcingOnTheCake.git
@@ -26,33 +31,79 @@ docker-compose up
 
 Clone the repository with the submodules:
 
-```sh
+```shell
 git clone git@github.com:DemosLabs/IcingOnTheCake.git --recursive
 ```
 
 Build the docker-compose project
 
-```sh
+```shell
 docker-compose build
 ```
 
 Run the docker-compose project
 
-```sh
+```shell
 docker-compose up
 ```
 
-## Running with HTTPS and Basic Auth (using docker-compose and Traefik)
-
-WIP
-
-## Settings
+### Local Settings
 
 | Syntax         | Description     |
 | -------------- | --------------- |
 | JSON-RPC URL   | localhost:8545  |
 | Block Explorer | localhost:26000 |
 | Chain ID       | 1337            |
+
+## Running with HTTPS and Basic Auth (using docker-compose and Traefik)
+
+Clone the repository:
+
+```shell
+git clone git@github.com:DemosLabs/IcingOnTheCake.git
+```
+
+Pull the docker-compose containers
+
+```shell
+docker-compose pull
+```
+
+Make sure the domain you want to use have proper A Records (for the subdomains `rpc` and `explorer`) pointing to the machine you wish to deploy the chain from.
+
+Configure your web environment:
+
+- Copy `.env.example` to `.env`
+- Fill `ACME_EMAIL` to get reminders in the case your certificates are about to expire (it doesn't happen often since Traefik handle this automatically)
+- Fill `HOST` with the base domain you want to expose the services on.
+- Generate a Basic Authentication secret:
+
+  ```shell
+  echo $(htpasswd -nb USERNAME PASSWORD) | sed -e s/\\$/\\$\\$/g
+
+  ```
+
+Launch the docker compose project including the Traefik definitions:
+
+```shell
+docker-compose -f docker-compose.yml \
+               -f docker-compose.traefik.yml \
+               -f docker-compose.traefik-config.yml \
+               up -d
+```
+
+After giving some minutes to Traefik for it to do its magic, the RPC and the Explorer will be available over HTTPS with a Basic Authentication.
+
+### Traefik Settings
+
+| Syntax         | Description                  |
+| -------------- | ---------------------------- |
+| JSON-RPC URL   | https://rpc.example.com      |
+| Block Explorer | https://explorer.example.com |
+| Chain ID       | 1337                         |
+
+> You can use the RPC with an incline authentication string (useful with Metamask for example)
+> `https://user:password@rpc.example.com`
 
 ## Accounts with funds
 
